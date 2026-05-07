@@ -11,3 +11,7 @@ use App\Models\Film;
 test('Film model exists', function () {
     $this->assertTrue(class_exists(Film::class));
 });
+
+test('Socio controller exists', function () {
+    $this->assertTrue(class_exists(SocioController::class));
+});
