@@ -15,3 +15,13 @@ test('Film model exists', function () {
 test('Socio controller exists', function () {
     $this->assertTrue(class_exists(SocioController::class));
 });
+
+test('Film information is returned', function () {
+    $film = Film::factory()->create([
+        'title' => 'Inception',
+        'director' => 'Christopher Nolan',
+    ]);
+
+    $this->assertEquals('Inception', $film->title);
+    $this->assertEquals('Christopher Nolan', $film->director);
+});
