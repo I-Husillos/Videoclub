@@ -12,7 +12,8 @@ class PeliculasController extends Controller
      */
     public function index()
     {
-        //
+        $peliculas = Peliculas::all();
+        return response()->json($peliculas, 200);
     }
 
     /**
@@ -28,15 +29,36 @@ class PeliculasController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'director' => 'required|string|max:255',
+        ]);
+
+        $pelicula = Peliculas::create([
+            'title' => $request->title,
+            'director' => $request->director,
+        ]);
+
+        return response()->json([
+            'message' => 'Película creada exitosamente',
+            'pelicula' => $pelicula,
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Peliculas $peliculas)
+    public function show($id)
     {
-        //
+        $pelicula = Peliculas::with(['socios' => function ($query) {
+            $query->orderByPivot('fecha_prestamo', 'desc');
+        }])->find($id);
+
+        if (!$pelicula) {
+            return response()->json(['mensaje' => 'Película no encontrada'], 404);
+        }
+
+        return response()->json($pelicula, 200);
     }
 
     /**
@@ -50,9 +72,25 @@ class PeliculasController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Peliculas $peliculas)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'title' => 'sometimes|required|string|max:255',
+            'director' => 'sometimes|required|string|max:255',
+        ]);
+
+        $pelicula = Peliculas::find($id);
+
+        if (!$pelicula) {
+            return response()->json(['mensaje' => 'Película no encontrada'], 404);
+        }
+
+        $pelicula->update($request->only(['title', 'director']));
+
+        return response()->json([
+            'message' => 'Película actualizada exitosamente',
+            'pelicula' => $pelicula,
+        ], 200);
     }
 
     /**

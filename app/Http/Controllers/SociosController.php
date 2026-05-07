@@ -12,7 +12,8 @@ class SociosController extends Controller
      */
     public function index()
     {
-        //
+        $socios = Socios::all();
+        return response()->json($socios, 200);
     }
 
     /**
@@ -28,15 +29,35 @@ class SociosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:socios,email',
+        ]);
+
+        $socio = Socios::create([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        return response()->json([
+            'message' => 'Socio created successfully',
+            'socio' => $socio,
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Socios $socios)
+    public function show($id)
     {
-        //
+        $lector = Socios::with(['peliculas' => function ($query) {
+            $query->orderByPivot('fecha_prestamo', 'desc');
+        }])->find($id);
+
+        if (!$lector) {
+            return response()->json(['mensaje' => 'Socio no encontrado'], 404);
+        }
+        return response()->json($lector, 200);
     }
 
     /**
@@ -52,7 +73,17 @@ class SociosController extends Controller
      */
     public function update(Request $request, Socios $socios)
     {
-        //
+        $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:socios,email,' . $socios->id,
+        ]);
+
+        $socios->update($request->only(['name', 'email']));
+
+        return response()->json([
+            'message' => 'Socio updated successfully',
+            'socio' => $socios,
+        ], 200);
     }
 
     /**
