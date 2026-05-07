@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\Film;
+use App\Http\Controllers\SociosController;
+use App\Models\Peliculas;
 
 
 // tests: 
@@ -9,15 +10,15 @@ use App\Models\Film;
 // -si devuelve la informacion el titulo y director
 
 test('Film model exists', function () {
-    $this->assertTrue(class_exists(Film::class));
+    $this->assertTrue(class_exists(Peliculas::class));
 });
 
 test('Socio controller exists', function () {
-    $this->assertTrue(class_exists(SocioController::class));
+    $this->assertTrue(class_exists(SociosController::class));
 });
 
 test('Film information is returned', function () {
-    $film = Film::factory()->create([
+    $film = Peliculas::factory()->create([
         'title' => 'Inception',
         'director' => 'Christopher Nolan',
     ]);
